@@ -2,18 +2,17 @@ import {IProduct} from "../../types/index.ts";
 
 export class Basket {
     private items: IProduct[] = [];
-    private products: IProduct[];
 
-    constructor (products: IProduct[]) {
-        this.products = products;
+    constructor () {
+
     }
 
     getItems (): IProduct[] {
-        return [...this.items]
+        return this.items
     }
 
-    addItem (enteredId: string): void {
-        const product = this.products.find((product: IProduct) => product.id === enteredId);
+    addItem (item: IProduct, products: IProduct[]): void {
+        const product = products.find((product: IProduct) => product.id === item.id);
         if ((product) && (product.price !== null)) {
             this.items.push(product);
         }
@@ -29,7 +28,10 @@ export class Basket {
 
     sumProducts (): number {
         return this.items.reduce((total, product) => {
-            const price = product.price as number;
+            let price = product.price;
+            if (price == null) {
+                price = 0
+            }
             return total + price
         }, 0);
     }
@@ -38,7 +40,7 @@ export class Basket {
         return this.items.length
     }
 
-    checkingAvailability (enteredId: string): boolean {
-        return this.products.some((product: IProduct) => product.id === enteredId);
+    checkingAvailability (enteredId: string, products: IProduct[]): boolean {
+        return products.some((product: IProduct) => product.id === enteredId);
     }
 }

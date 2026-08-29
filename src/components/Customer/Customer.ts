@@ -1,4 +1,4 @@
-import { IBuyer, payment } from "../../types/index";
+import { IBuyer } from "../../types/index";
 
 export class Customer {
     private user: IBuyer = {
@@ -12,13 +12,10 @@ export class Customer {
         
     }
 
-    setuser (payment: payment, email: string, phone: string, address: string): void {
+    setuser (updates: Partial<IBuyer>): void {
         this.user = {
             ...this.user,
-            payment,
-            email,
-            phone,
-            address
+            ...updates
         }
     }
 
@@ -35,9 +32,7 @@ export class Customer {
         };
     }
 
-    validation (): {} {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const phoneRegex = /^\+?[78]?\d{11}$/;
+    validation (): Partial<IBuyer> {
         let errorValidation: {} = {
             payment: "",
             email: "",
@@ -48,7 +43,7 @@ export class Customer {
         if (!this.user.payment) {
             errorValidation = {
                 ...errorValidation,
-                payment: "не выбран вид оплаты" as string
+                payment: "не выбран вид оплаты"
             }
         };
 
@@ -57,16 +52,7 @@ export class Customer {
                 ...errorValidation,
                 email: "Укажите email"
             }
-        } else if (!emailRegex.test(this.user.email)) {
-            errorValidation = {
-                ...errorValidation,
-                email: "Укажите корректный email"
-            }
-            this.user = {
-                ...this.user, 
-                email: ""
-            }
-        };
+        }
 
         if (!this.user.address) {
             errorValidation = {
@@ -79,27 +65,6 @@ export class Customer {
             errorValidation = {
                 ...errorValidation,
                 phone: "Укажите номер телефона"
-            }
-        } else if (/[^+\(\)-\s\d]/g.test(this.user.phone)) {
-            errorValidation = {
-                    ...errorValidation,
-                    phone: "Введите корректный номер телефона"
-            }
-            this.user = {
-                ...this.user, 
-                phone: ""
-            }
-        } else {
-            let phone = this.user.phone.replace(/[^\d+]/g, '')
-            if (!phoneRegex.test(phone)) {
-                errorValidation = {
-                    ...errorValidation,
-                    phone: "Введите корректный номер телефона"
-                }
-                this.user = {
-                    ...this.user, 
-                    phone: ""
-                }
             }
         }
         

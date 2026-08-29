@@ -14,19 +14,26 @@ export interface IProduct {
     price: number | null;
 };
 
-export type payment = "card" | "cash" | "";
+export type Payment = "card" | "cash" | "";
 
 export interface IBuyer {
-    payment: payment;
+    payment: Payment;
     email: string;
     phone: string;
     address: string;
 };
 
-export type Response = {
+export interface ResponseProducts {
     items: IProduct[],
-    id: IProduct['id'],
     total: number
 };
 
-export type Order = IBuyer & {total: number, items: string[]};
+export interface ResponseOrder {
+    total: number,
+    id: string
+}
+
+export interface Order extends IBuyer {
+    total: number,
+    items: string[]
+};

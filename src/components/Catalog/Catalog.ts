@@ -2,22 +2,21 @@ import {IProduct} from "../../types/index.ts";
 
 export class Catalog {
     private items: IProduct[] = [];
-    private card?: IProduct;
+    private card: IProduct | undefined;
 
     constructor () {
         
     }
 
     setItems(items: IProduct[]): void {
-        if (!Array.isArray(items)) {throw new Error('Ожидается массив')};
         this.items = items;
     }
 
     getItems (): IProduct[] {
-        return [...this.items]
+        return this.items
     }
 
-    setFindId (enteredId: string): IProduct | undefined {
+    searchId (enteredId: string): IProduct | undefined {
         return this.items.find((product: IProduct) => product.id === enteredId)
     }
 

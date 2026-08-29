@@ -1,16 +1,16 @@
-import { IApi, Order, Response } from "../../types/index";
+import { IApi, Order, ResponseProducts, ResponseOrder } from "../../types/index";
 
 export class ApiFromServer {
-    api: IApi
+    private api: IApi
     constructor(api: IApi) {
         this.api = api
     }
 
-    async getApi (uri: string): Promise<Response> {
-        return await this.api.get(uri)
+    getApiProduct (): Promise<ResponseProducts> {
+        return this.api.get("/product/")
     }
 
-    async postApi (uri: string, order: Order): Promise<Response> {
-        return await this.api.post(uri, order)
+    postApiOrder (order: Order): Promise<ResponseOrder> {
+        return this.api.post("/order", order)
     }
 }
