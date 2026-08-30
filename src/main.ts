@@ -21,30 +21,9 @@ productsModel.setCard("412bcf81-7e75-4e70-bdb9-d3c73c9803b7");
 console.log("Выбранная карточка товара: ", productsModel.getCard());
 
 // проверка методов корзины
-basketModel.addItem({
-    category: "софт-скил",
-    description: "Если планируете решать задачи в тренажёре, берите два.",
-    id: "854cef69-976d-4c2a-a18c-2aa45046c390",
-    image: "/5_Dots.avif",
-    price: 750,
-    title: "+1 час в сутках"
-}, productsModel.getItems());
-basketModel.addItem({
-    category: "другое",
-    description: "Лизните этот леденец, чтобы мгновенно запоминать и узнавать любой цветовой код CSS.",
-    id: "c101ab44-ed99-4a54-990d-47aa2bb4e7d9",
-    image: "/Shell.avif",
-    price: 1450,
-    title: "HEX-леденец"
-}, productsModel.getItems());
-basketModel.addItem({
-    category: "софт-скил",
-    description: "Будет стоять над душой и не давать прокрастинировать.",
-    id: "b06cde61-912f-4663-9751-09956c0eed67",
-    image: "/Asterisk_2.avif",
-    price: null,
-    title: "Мамка-таймер"
-}, productsModel.getItems());
+basketModel.addItem(apiProducts.items[0]);
+basketModel.addItem(apiProducts.items[1]);
+basketModel.addItem(apiProducts.items[2]);
 console.log("Массив товаров из корзины: ", basketModel.getItems());
 console.log("Сумма товаров в корзине: ", basketModel.sumProducts());
 console.log("Количество товаров в корзине: ", basketModel.quantity());
@@ -55,14 +34,7 @@ console.log("Массив товаров из корзины: ", basketModel.get
 basketModel.cleaning()
 console.log("Массив товаров из корзины: ", basketModel.getItems());
 console.log("проверка наличия товара из корзины в каталоге: ", basketModel.checkingAvailability("854cef69-976d-4c2a-a18c-2aa45046c390", productsModel.getItems()));
-basketModel.addItem({
-    category: "другое",
-    description: "Лизните этот леденец, чтобы мгновенно запоминать и узнавать любой цветовой код CSS.",
-    id: "c101ab44-ed99-4a54-990d-47aa2bb4e7d9",
-    image: "/Shell.avif",
-    price: 1450,
-    title: "HEX-леденец"
-}, productsModel.getItems());
+basketModel.addItem(apiProducts.items[0]);
 
 // проверка методов пользователя
 user.setuser({
@@ -83,14 +55,12 @@ console.log("Данные пользователя после очистки: ",
 
 // запрос на сервер
 const api = new Api(API_URL);
-const pop = new ApiFromServer(api);
+const receivingProducts = new ApiFromServer(api);
 
-async function initApi() {
-  const data = await pop.getApiProduct();
-  return data
-}
-initApi().then(data => {
-    console.log("Данные с сервера: ", data);
+receivingProducts.getApiProduct()
+.then(data => {
+    productsModel.setItems(data.items);
+    console.log("Данные с сервера: ", productsModel.getItems());
 })
 .catch(console.error);
 

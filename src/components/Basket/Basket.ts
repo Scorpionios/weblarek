@@ -11,11 +11,8 @@ export class Basket {
         return this.items
     }
 
-    addItem (item: IProduct, products: IProduct[]): void {
-        const product = products.find((product: IProduct) => product.id === item.id);
-        if ((product) && (product.price !== null)) {
-            this.items.push(product);
-        }
+    addItem (item: IProduct): void {
+        this.items.push(item);
     }
 
     deletItem (enteredId: string): void {
@@ -27,13 +24,7 @@ export class Basket {
     }
 
     sumProducts (): number {
-        return this.items.reduce((total, product) => {
-            let price = product.price;
-            if (price == null) {
-                price = 0
-            }
-            return total + price
-        }, 0);
+         return this.items.reduce((total, item) => total + (item.price || 0), 0);
     }
 
     quantity (): number {

@@ -7,10 +7,10 @@ export class ApiFromServer {
     }
 
     getApiProduct (): Promise<ResponseProducts> {
-        return this.api.get("/product/")
+        return this.api.get<ResponseProducts>("/product/")
     }
 
     postApiOrder (order: Order): Promise<ResponseOrder> {
-        return this.api.post("/order", order)
+        return this.api.post<ResponseOrder>("/order", order)
     }
 }

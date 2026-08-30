@@ -1,4 +1,4 @@
-import { IBuyer } from "../../types/index";
+import { IBuyer, TBuyerErrors } from "../../types/index";
 
 export class Customer {
     private user: IBuyer = {
@@ -32,13 +32,8 @@ export class Customer {
         };
     }
 
-    validation (): Partial<IBuyer> {
-        let errorValidation: {} = {
-            payment: "",
-            email: "",
-            phone: "",
-            address: ""
-        };
+    validation (): TBuyerErrors {
+        let errorValidation: TBuyerErrors = {};
 
         if (!this.user.payment) {
             errorValidation = {
