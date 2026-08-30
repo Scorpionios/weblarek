@@ -183,7 +183,7 @@ Presenter - презентер содержит основную логику п
 `cleaning (): void` - очистка корзины.
 `sumProducts (): number` - получение стоимости всех товаров в корзине.
 `quantity (): number`- получение количества товаров в корзине.
-`checkingAvailability (enteredId: string, products: IProduct[]): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода.
+`checkingAvailability (enteredId: string): boolean` - проверка наличия товара в корзине по его id, полученного в параметр метода.
 
 ##### Класс Customer
 Хранит данные о покупателе.

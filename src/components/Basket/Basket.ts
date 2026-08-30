@@ -31,7 +31,7 @@ export class Basket {
         return this.items.length
     }
 
-    checkingAvailability (enteredId: string, products: IProduct[]): boolean {
-        return products.some((product: IProduct) => product.id === enteredId);
+    checkingAvailability (item: IProduct): boolean {
+        return this.items.some((product: IProduct) => product.id === item.id);
     }
 }

@@ -27,13 +27,11 @@ basketModel.addItem(apiProducts.items[2]);
 console.log("Массив товаров из корзины: ", basketModel.getItems());
 console.log("Сумма товаров в корзине: ", basketModel.sumProducts());
 console.log("Количество товаров в корзине: ", basketModel.quantity());
-
-
+console.log("проверка наличия товара в корзине: ", basketModel.checkingAvailability(apiProducts.items[0]));
 basketModel.deletItem("c101ab44-ed99-4a54-990d-47aa2bb4e7d9");
 console.log("Массив товаров из корзины: ", basketModel.getItems());
 basketModel.cleaning()
 console.log("Массив товаров из корзины: ", basketModel.getItems());
-console.log("проверка наличия товара из корзины в каталоге: ", basketModel.checkingAvailability("854cef69-976d-4c2a-a18c-2aa45046c390", productsModel.getItems()));
 basketModel.addItem(apiProducts.items[0]);
 
 // проверка методов пользователя
