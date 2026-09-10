@@ -29,6 +29,6 @@ export class ProductCatalog extends Product<ProductCatalogData> {
     }
 
     protected set image(value: string) {
-        this.imageElement.src = value;
+        this.imageElement.src = "/src/images" + value;
     }
 }

@@ -22,6 +22,7 @@ export class Catalog {
 
     setCard (enteredId: string): void {
         this.card = this.items.find((product: IProduct) => product.id === enteredId);
+        this.events.emit('card:changed');
     }
 
     getCard (): IProduct | undefined {

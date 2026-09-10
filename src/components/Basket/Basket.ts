@@ -12,16 +12,12 @@ export class Basket {
 
     addItem (item: IProduct): void {
         this.items.push(item);
-        console.log(this.items);
         this.events.emit(`basket:changed`);
-        this.events.emit('добавлено в корзину');
     }
 
     deletItem (enteredId: string): void {
         this.items = this.items.filter((product: IProduct) => product.id !== enteredId);
-        console.log(this.items);
         this.events.emit(`basket:changed`);
-        this.events.emit('удалено из корзины')
     }
 
     cleaning (): void {

@@ -12,7 +12,7 @@ export class ContactsForm extends Form<ContactsFormData> {
     protected buttoncontacts: HTMLButtonElement;
     protected inputForm: HTMLInputElement[];
 
-    constructor(protected events: IEvents, container: HTMLElement) {
+    constructor(protected events: IEvents, container: HTMLFormElement) {
         super(container);
 
         this.buttoncontacts = ensureElement<HTMLButtonElement>('.button', this.container);
@@ -42,8 +42,6 @@ export class ContactsForm extends Form<ContactsFormData> {
 
     protected set email(value: string) {
         const input = this.inputForm.find((input: HTMLInputElement) => input.name === 'email');
-        console.log(input?.value);
-        
         if (input) input.value = value
     }
 

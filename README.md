@@ -201,7 +201,7 @@ Presenter - презентер содержит основную логику п
 
 ### Коммуникационный слой
 
-##### Класс ApiFromServer
+#### Класс ApiFromServer
 Для отправки и принятия данных с сервера.
 
 Конструктор:
@@ -213,3 +213,176 @@ Presenter - презентер содержит основную логику п
 Методы класса:
 `getApiProduct (): Promise<ResponseProducts>` - получение с сервера объекта с товарами.
 `postApiOrder (order: Order): Promise<ResponseOrder>` - отправка на сервер данных о купленных товарах и покупателе.
+
+### Слой представления
+
+#### Класс Gallery
+Для отображения карточек товара.
+
+Конструктор:
+`constructor(container: HTMLElement)` - в конструктор передаётся HTMLElement, в который будет помещён массив из карточек товара.
+
+Методы класса:
+`protected set catalog(items: HTMLElement[])` - помещение массива с карточками товаров
+
+#### Класс Header
+Для отображения количества товара в корзине и кнопкой для открытия корзины
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLElement)` - в конструктор events для отправки emit, на открытие корзины, а в container передаётся HTMLElement с header
+
+Поля класса:
+`protected basketButton: HTMLButtonElement` - хранит HTML разметку кнопки
+`protected basketCounter: HTMLElement` - хранит HTML разметку строки с числом
+
+Методы класса:
+`protected set counter (value: number)` - установка количества товаров в корзине в текстовый контент
+
+#### Класс Product
+Родительский класс для классов ProductBasket, ProductCatalog, ProductPreview
+
+Конструктор:
+`constructor(container: HTMLElement)` - в конструктор помещается HTML элемент с карточкой товара
+
+Поля класса:
+`protected priceElement: HTMLElement` - хранит HTML разметку строки для цены
+`protected titleElement: HTMLElement` - хранит HTML разметку строки с названием
+
+Методы класса:
+`protected set title(value: string)` - установка названия в текстовый контент
+`protected set price(value: number)` - установка цены в текстовый контент
+
+#### Класс ProductBasket
+Для отбражения товара в корзине
+
+Конструктор:
+`constructor(container: HTMLElement, actions?: ICardActions)` - в конструктор передаётся HTML разметка с товаром и функция, которая запускается при нажатии на кнопку
+
+Поля класса:
+`protected indexElement: HTMLElement` - хранит HTML разметку строки для нумерации
+`protected deletButton: HTMLButtonElement` - хранит HTML разметку кнопки
+
+Методы класса:
+`protected set index(value: number)` - установка нумерации в текстовый контент
+
+#### Класс ProductCatalog
+Для отбражения товара в каталоге
+
+Конструктор:
+`constructor(container: HTMLElement, actions?: ICardActions)` - в конструктор передаётся HTML разметка с товаром и функция, которая запускается при нажатии на кнопку
+
+Поля класса:
+`protected categoryElement: HTMLElement` - хранит HTML разметку строки для отображения категорий
+`protected imageElement: HTMLImageElement` - хранит HTML разметку строки для изображения
+
+Методы класса:
+`protected set category(value: string)` - установка категории в текстовый контент
+`protected set image(value: string)` - установка изображения
+
+#### Класс ProductPreview
+Для подробного отображения товара
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLElement)` - в конструктор передаётся HTML разметка с товаром и events для отправки emit
+
+Поля класса:
+`protected categoryElement: HTMLElement` - хранит HTML разметку строки для отображения категорий
+`protected imageElement: HTMLImageElement` - хранит HTML разметку строки для изображения
+`protected descriptionElement: HTMLElement` - хранит HTML разметку строки для отображения описания
+`protected buyButtonElement: HTMLButtonElement` - хранит HTML разметку кнопки для добавления в корзину
+
+Методы класса:
+`protected set category(value: string)` - установка категории в текстовый контент
+`protected set image(value: string)` - установка изображения в текстовый контент
+`protected set description(value: string)` - установка описания в текстовый контент
+`protected set button(value: string)` - установка надписи в кнопке
+`protected set valid(value: boolean)` - для открытия доступа к кнопке
+
+#### Класс Form
+Родительский класс для классов ContactsForm, OrderForm
+
+Конструктор:
+`constructor(container: HTMLElement)` - в конструктор помещается HTML элемент с формой
+
+Поля класса:
+`protected errorForm: HTMLElement` - хранит HTML разметку строки для отображения ошибок
+
+Методы класса:
+`protected set error (value: string)` - установка текста ошибки в текстовый контент
+
+#### Класс OrderForm
+Для получения от пользователя способа оплаты и адресса доставки
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLFormElement)` - в конструктор передаётся HTML разметка формы и events для отправки emit
+
+Поля класса:
+`protected buttonPayment: HTMLButtonElement[]` - хранит массив HTML разметки кнопок выбора оплаты
+`protected buttonOrder: HTMLButtonElement` - хранит HTML разметку кнопки для перехода на следующую форму
+`protected inputForm: HTMLInputElement` - хранит HTML разметку инпута адресса
+
+Методы класса:
+`protected set payment(value: Payment)` - установка выбора способа оплаты
+`protected set address(value: string)` - установка адресса в инпуте
+`protected set valid(value: boolean)` - для открытия доступа к кнопке
+
+#### Класс ContactsForm
+Для получения от пользователя майла и телефона
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLFormElement)` - в конструктор передаётся HTML разметка формы и events для отправки emit
+
+Поля класса:
+`protected buttoncontacts: HTMLButtonElement` - хранит HTML разметку кнопки для отправки emit, где уже отправятся данные на сервер
+`protected inputForm: HTMLInputElement[]` - хранит массив HTML разметки инпутов для заполнения формы
+
+Методы класса:
+`protected set email(value: string)` - установка майла в инпуте
+`protected set phone(value: string)` - установка телефона в инпуте
+`protected set valid(value: boolean)` - для открытия доступа к кнопке
+
+#### Класс Success
+Отображается общаяя стоимость покупки и после неё никаких данных о пользователе или купленных товарах нет
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLElement)` - в конструктор передаётся HTML разметка формы и events для отправки emit
+
+Поля класса:
+`protected successButton: HTMLButtonElement` - хранит HTML разметку кнопки для закрытия окна
+`protected successOrder: HTMLElement` - хранит HTML разметку строки с полной стоимостью
+
+Методы класса:
+`protected set total (value: number)` - установка с сервера полной стоимости покупки в строке
+
+#### Класс BasketView
+Для отображения корзины
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLElement)` - в конструктор передаётся HTML разметка формы и events для отправки emit
+
+Поля класса:
+`protected basketButton: HTMLButtonElement` - хранит HTML разметку кнопки для оформления покупки
+`protected basketContent: HTMLElement` - хранит HTML разметку контейнера, в который помещается массив выбранных товаров
+`protected basketPrice: HTMLElement` - хранит HTML разметку строки для отображения суммы стоимости товаров
+
+Методы класса:
+`protected set content (value: HTMLElement[])` - установка массива выбранных товаров в контейнер
+`protected set total (value: number)` - установка общей стоимости товаров
+`protected set valid(value: boolean)` - для открытия доступа к кнопке
+
+#### Класс Modal
+Окно, в которое помещаются элементы
+
+Конструктор:
+`constructor(protected events: IEvents, container: HTMLElement)` - в конструктор передаётся HTML разметка формы и events для отправки emit
+
+Поля класса:
+`protected modalButton: HTMLButtonElement` - хранит HTML разметку кнопки для закрытия окна
+`protected modalContent: HTMLElement` - хранит HTML разметку контейнера, в который помещается HTML элемент
+`protected modalWindow: HTMLElement` - хранит HTML разметку контейнера окна
+
+Методы класса:
+`protected set content (value: HTMLElement)` - помещение HTML элементов в контейнере
+`open(): void` - открытие окна
+`close(): void` - закрытие окна
+`render(data: ModalData): HTMLElement` - для отображения всех элементов

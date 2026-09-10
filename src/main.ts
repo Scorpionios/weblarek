@@ -1,5 +1,4 @@
 import './scss/styles.scss';
-import { apiProducts } from "./utils/data"
 import { Catalog } from "./components/Catalog/Catalog";
 import { Basket } from "./components/Basket/Basket";
 import { Customer } from "./components/Customer/Customer";
@@ -31,24 +30,12 @@ const header = new Header(events, ensureElement<HTMLElement>(".header"));
 const catalog = new Gallery(ensureElement<HTMLElement>(".gallery"));
 const modal = new Modal(events, ensureElement<HTMLElement>("#modal-container"));
 const cardPreview = new ProductPreview(events, cloneTemplate<HTMLElement>("#card-preview"))
-
 const formOrder = new OrderForm(events, cloneTemplate<HTMLFormElement>("#order"));
-const formContacts = new ContactsForm(events, cloneTemplate<HTMLElement>("#contacts"));
-
+const formContacts = new ContactsForm(events, cloneTemplate<HTMLFormElement>("#contacts"));
 const success = new Success(events, cloneTemplate<HTMLElement>("#success"));
 
-// запрос на сервер
 const api = new Api(API_URL);
 const receivingProducts = new ApiFromServer(api);
-
-receivingProducts.getApiProduct()
-.then(data => {
-    productsModel.setItems(data.items);
-    console.log("Данные с сервера: ", productsModel.getItems());
-})
-.catch(console.error);
-
-events.onAll(({ eventName }) => console.log('Событие:', eventName));
 
 events.on('catalog:changed', () => {
     const itemcards = productsModel.getItems().map((item) => {
@@ -88,42 +75,44 @@ events.on('basket:open', () => {
     })});
 });
 
-events.on('success:closed', () => {
-    basketModel.cleaning();
-    user.deleteUser();
+events.on('modal:closed', () => {
     modal.close();
 });
 
 events.on('card:select', (item: IProduct) => {
-    if (item.price == null) {
-        cardPreview.render({
-            valid: false,
-            button: "Недоступно"
+    productsModel.setCard(item.id);
+});
+
+events.on('card:changed', () => {
+    const item = productsModel.getCard();
+    if (item) {
+        const button = item.price
+        ? basketModel.checkingAvailability(item.id)
+        ? {button: "Удалить из корзины", valid: true}
+        : {button: "В корзину", valid: true}
+        : {button: "Недоступно", valid: false}
+
+        modal.render({
+            content: cardPreview.render({
+                ...item,
+                ...button
+            })
         })
-    } else if (basketModel.checkingAvailability(item.id)) {
-        cardPreview.render({ 
-            button: "Удалить из корзины",
-            valid: true
-        });
-    } else {
-        cardPreview.render({
-                button: "В корзину",
-                valid: true
-            });
     }
-    modal.render({ content: cardPreview.render(item) });
-    events.on('product:changedStatus', () => {
+})
+
+events.on('product:changedStatus', () => {
+    const item = productsModel.getCard();
+    if (item) {
         if (basketModel.checkingAvailability(item.id)) {
-            console.log(item.id);
             events.emit('card:deleted', item);
             cardPreview.render({ button: "В корзину" });
         } else {
-            console.log(item.id);
             basketModel.addItem(item);
             cardPreview.render({ button: "Удалить из корзины" });
         }
-    })
-});
+    }
+})
 
 events.on('card:deleted', (item: IProduct) => {
     basketModel.deletItem(item.id);
@@ -193,6 +182,15 @@ events.on('form:arrange', () => {
         modal.render({content: success.render({
             total: data.total
         })});
+        basketModel.cleaning();
+        user.deleteUser();
     })
     .catch(console.error);
 });
+
+receivingProducts.getApiProduct()
+.then(data => {
+    productsModel.setItems(data.items);
+    console.log("Данные с сервера: ", productsModel.getItems());
+})
+.catch(console.error);

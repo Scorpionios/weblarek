@@ -37,7 +37,7 @@ export class ProductPreview extends Product<ProductPreviewData> {
     }
 
     protected set image(value: string) {
-        this.imageElement.src = value;
+        this.imageElement.src = "/src/images" + value;
     }
 
     protected set description(value: string) {

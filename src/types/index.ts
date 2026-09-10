@@ -1,5 +1,3 @@
-import { EventEmitter } from "../components/base/Events";
-
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
@@ -45,12 +43,11 @@ export interface Order extends IBuyer {
 export interface ProductData {
     title: string;
     price: number | null;
-}
+};
 
 export interface ICardActions {
     onClick?: () => void;
-    onReceipt?: () => void;
-}
+};
 
 export interface FormData {
     error: string;

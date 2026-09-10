@@ -45,7 +45,7 @@ export class OrderForm extends Form<OrderFormData> {
         });
     }
 
-    protected set payment(value: Payment | null) {
+    protected set payment(value: Payment) {
         this.buttonPayment.forEach((button) => {
             button.classList.toggle('button_alt-active', button.name === value);
         });
