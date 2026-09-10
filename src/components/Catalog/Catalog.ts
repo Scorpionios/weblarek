@@ -1,15 +1,15 @@
-import {IProduct} from "../../types/index.ts";
+import { IProduct } from "../../types/index.ts";
+import { IEvents } from "../base/Events.ts";
 
 export class Catalog {
     private items: IProduct[] = [];
     private card: IProduct | undefined;
 
-    constructor () {
-        
-    }
+    constructor (protected events: IEvents) {}
 
     setItems(items: IProduct[]): void {
         this.items = items;
+        this.events.emit('catalog:changed');
     }
 
     getItems (): IProduct[] {

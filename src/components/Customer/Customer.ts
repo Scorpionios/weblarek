@@ -1,4 +1,5 @@
 import { IBuyer, TBuyerErrors } from "../../types/index";
+import { IEvents } from "../base/Events.ts";
 
 export class Customer {
     private user: IBuyer = {
@@ -8,15 +9,14 @@ export class Customer {
         address: ""
     };
 
-    constructor() {
-        
-    }
+    constructor(protected events: IEvents) {}
 
     setuser (updates: Partial<IBuyer>): void {
         this.user = {
             ...this.user,
             ...updates
         }
+        this.events.emit(`user:changed`);
     }
 
     getuser (): IBuyer {
@@ -30,6 +30,7 @@ export class Customer {
             phone: "",
             address: ""
         };
+        this.events.emit(`user:changed`);
     }
 
     validation (): TBuyerErrors {

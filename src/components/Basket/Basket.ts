@@ -1,11 +1,10 @@
 import {IProduct} from "../../types/index.ts";
+import { IEvents } from "../base/Events.ts";
 
 export class Basket {
     private items: IProduct[] = [];
 
-    constructor () {
-
-    }
+    constructor (protected events: IEvents) {}
 
     getItems (): IProduct[] {
         return this.items
@@ -13,14 +12,21 @@ export class Basket {
 
     addItem (item: IProduct): void {
         this.items.push(item);
+        console.log(this.items);
+        this.events.emit(`basket:changed`);
+        this.events.emit('добавлено в корзину');
     }
 
     deletItem (enteredId: string): void {
         this.items = this.items.filter((product: IProduct) => product.id !== enteredId);
+        console.log(this.items);
+        this.events.emit(`basket:changed`);
+        this.events.emit('удалено из корзины')
     }
 
     cleaning (): void {
         this.items = [];
+        this.events.emit(`basket:changed`);
     }
 
     sumProducts (): number {
@@ -31,7 +37,7 @@ export class Basket {
         return this.items.length
     }
 
-    checkingAvailability (item: IProduct): boolean {
-        return this.items.some((product: IProduct) => product.id === item.id);
+    checkingAvailability (enteredId: string): boolean {
+        return this.items.some((product: IProduct) => product.id === enteredId);
     }
 }
