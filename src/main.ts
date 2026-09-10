@@ -191,6 +191,5 @@ events.on('form:arrange', () => {
 receivingProducts.getApiProduct()
 .then(data => {
     productsModel.setItems(data.items);
-    console.log("Данные с сервера: ", productsModel.getItems());
 })
 .catch(console.error);
