@@ -1,56 +1,39 @@
-import { ensureElement, ensureAllElements } from '../../utils/utils';
+import { ensureElement } from '../../utils/utils';
 import { Form } from "./Form";
-import { FormData } from "../../types/index";
+import { IFormState, IBuyer } from "../../types/index";
 import { IEvents } from "../base/Events.ts";
 
-interface ContactsFormData extends FormData {
-    email: string;
-    phone: string;
-}
+type ContactsFormData = Pick<IBuyer, 'email' | 'phone'> & IFormState 
 
 export class ContactsForm extends Form<ContactsFormData> {
-    protected buttoncontacts: HTMLButtonElement;
-    protected inputForm: HTMLInputElement[];
+    protected emailInput: HTMLInputElement;
+    protected phoneInput: HTMLInputElement;
 
     constructor(protected events: IEvents, container: HTMLFormElement) {
-        super(container);
+        super(events, container);
 
-        this.buttoncontacts = ensureElement<HTMLButtonElement>('.button', this.container);
-        this.inputForm = ensureAllElements<HTMLInputElement>(".form__input", this.container);
+        this.emailInput = ensureElement<HTMLInputElement>('input[name="email"]', this.container);
+        this.phoneInput = ensureElement<HTMLInputElement>('input[name="phone"]', this.container);
 
-        this.inputForm.forEach((input) => {
-            input.addEventListener('input', () => {
-                if (input.name == 'phone') {
-                    this.events.emit('formContacts:changed', { 
-                        field: 'phone', 
-                        value: input.value
-                    });
-                } else {
-                    this.events.emit('formContacts:changed', { 
-                        field: 'email', 
-                        value: input.value 
-                    });
-                }
-            });
-        });
-
-        this.container.addEventListener('submit', (event) => {
-            event.preventDefault();
-            this.events.emit('form:arrange');
-        });
+        this.emailInput.addEventListener('input', () => {
+            this.events.emit('formContacts:changed', {
+                field: this.emailInput.name,
+                value: this.emailInput.value,
+            }); 
+        })
+        this.phoneInput.addEventListener('input', () => {
+            this.events.emit('formContacts:changed', {
+                field: this.phoneInput.name,
+                value: this.phoneInput.value,
+            }); 
+        })
     }
 
     protected set email(value: string) {
-        const input = this.inputForm.find((input: HTMLInputElement) => input.name === 'email');
-        if (input) input.value = value
+        this.emailInput.value = value
     }
 
     protected set phone(value: string) {
-        const input = this.inputForm.find((input: HTMLInputElement) => input.name === 'phone');
-        if (input) input.value = value
-    }
-
-    protected set valid(value: boolean) {
-        this.buttoncontacts.disabled = !value;
+        this.phoneInput.value = value
     }
 }

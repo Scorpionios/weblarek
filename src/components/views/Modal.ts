@@ -1,6 +1,5 @@
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
-import { IEvents } from "../base/Events";
 
 interface ModalData {
     content: HTMLElement;
@@ -11,7 +10,7 @@ export class Modal extends Component<ModalData> {
     protected modalContent: HTMLElement;
     protected modalWindow: HTMLElement;
 
-    constructor(protected events: IEvents, container: HTMLElement) {
+    constructor(container: HTMLElement) {
         super(container);
 
         this.modalButton = ensureElement<HTMLButtonElement>(".modal__close", this.container);
@@ -34,11 +33,5 @@ export class Modal extends Component<ModalData> {
     close(): void {
         this.container.classList.remove('modal_active');
         this.modalContent.replaceChildren();
-    }
-
-    render(data: ModalData): HTMLElement {
-        super.render(data);
-        this.open();
-        return this.container;
     }
 }

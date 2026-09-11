@@ -8,16 +8,16 @@ interface ProductBasketData extends ProductData {
 
 export class ProductBasket extends Product<ProductBasketData> {
     protected indexElement: HTMLElement;
-    protected deletButton: HTMLButtonElement;
+    protected deleteButton: HTMLButtonElement;
 
     constructor(container: HTMLElement, actions?: ICardActions) {
         super(container);
 
         this.indexElement = ensureElement<HTMLElement>('.basket__item-index', this.container);
-        this.deletButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
+        this.deleteButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container);
         
         if (actions?.onClick) {
-            this.deletButton.addEventListener('click', actions.onClick)
+            this.deleteButton.addEventListener('click', actions.onClick)
         }
     }
 

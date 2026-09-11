@@ -40,16 +40,23 @@ export interface Order extends IBuyer {
     items: string[]
 };
 
-export interface ProductData {
-    title: string;
-    price: number | null;
-};
+export type ProductData = Pick<IProduct, 'title' | 'price'>; 
 
 export interface ICardActions {
     onClick?: () => void;
 };
 
-export interface FormData {
+export interface IFormState {
     error: string;
     valid: boolean;
 };
+
+export type ProductMidtermData = Pick<IProduct, 'category' | 'image'> & ProductData;
+
+export type TOrderFormChange =
+| { field: 'payment'; value: Payment }
+| { field: 'address'; value: string };
+
+export type TContactsFormChange =
+| { field: 'phone'; value: string }
+| { field: 'email'; value: string }; 

@@ -4,8 +4,8 @@ import { Basket } from "./components/Basket/Basket";
 import { Customer } from "./components/Customer/Customer";
 import { ApiFromServer } from "./components/ApiFromServer/ApiFromServer";
 import { Api } from "./components/base/Api";
-import { API_URL } from "./utils/constants";
-import { Order, IProduct, Payment } from "./types/index";
+import { API_URL, CDN_URL } from "./utils/constants";
+import { Order, IProduct, TOrderFormChange, TContactsFormChange } from "./types/index";
 import { cloneTemplate, ensureElement } from "./utils/utils";
 import { Header } from "./components/views/Header";
 import { Gallery } from "./components/views/Gallery";
@@ -13,7 +13,7 @@ import { ProductCatalog } from "./components/views/ProductCatalog";
 import { ProductBasket } from "./components/views/ProductBasket";
 import { Modal } from "./components/views/Modal";
 import { ProductPreview } from "./components/views/ProductPreview";
-import { BasketView } from "./components/views/Basket";
+import { BasketView } from "./components/views/BasketView";
 import { EventEmitter } from "./components/base/Events";
 import { OrderForm } from "./components/views/OrderForm";
 import { ContactsForm } from "./components/views/ContactsForm";
@@ -25,57 +25,62 @@ const productsModel = new Catalog(events);
 const basketModel = new Basket(events);
 const user = new Customer(events);
 
-const basketv = new BasketView(events, cloneTemplate<HTMLElement>("#basket"));
+const basketView = new BasketView(events, cloneTemplate<HTMLElement>("#basket"));
 const header = new Header(events, ensureElement<HTMLElement>(".header"));
-const catalog = new Gallery(ensureElement<HTMLElement>(".gallery"));
-const modal = new Modal(events, ensureElement<HTMLElement>("#modal-container"));
+const gallery = new Gallery(ensureElement<HTMLElement>(".gallery"));
+const modal = new Modal(ensureElement<HTMLElement>("#modal-container"));
 const cardPreview = new ProductPreview(events, cloneTemplate<HTMLElement>("#card-preview"))
 const formOrder = new OrderForm(events, cloneTemplate<HTMLFormElement>("#order"));
 const formContacts = new ContactsForm(events, cloneTemplate<HTMLFormElement>("#contacts"));
 const success = new Success(events, cloneTemplate<HTMLElement>("#success"));
 
 const api = new Api(API_URL);
-const receivingProducts = new ApiFromServer(api);
+const larekApi = new ApiFromServer(api);
 
 events.on('catalog:changed', () => {
-    const itemcards = productsModel.getItems().map((item) => {
+    const itemCards = productsModel.getItems().map((item) => {
         const card = new ProductCatalog(cloneTemplate<HTMLElement>("#card-catalog"), {
             onClick: () => events.emit('card:select', item),
         });
 
-        return card.render(item)
+        return card.render({
+            category: item.category,
+            image: CDN_URL + item.image,
+            price: item.price,
+            title: item.title
+        })
     });
-    catalog.render({catalog: itemcards})
+    gallery.render({catalog: itemCards})
 });
 
 events.on('basket:changed', () => {
     header.render({
         counter: basketModel.quantity()
     });
-    const itemcards = basketModel.getItems().map((item, index) => {
+    const itemCards = basketModel.getItems().map((item, index) => {
         const displayIndex = index + 1;
         const card = new ProductBasket(cloneTemplate<HTMLElement>("#card-basket"), {
             onClick: () => events.emit('card:deleted', item),
         });
         return card.render({
-            ...item,
+            price: item.price,
+            title: item.title,
             index: displayIndex
         })
     });
-    basketv.render({
-        content: itemcards,
+    basketView.render({
+        content: itemCards,
         total: basketModel.sumProducts(),
         valid: basketModel.quantity() !== 0
     })
 });
 
 events.on('basket:open', () => {
-    modal.render({content: basketv.render({
-        valid: basketModel.quantity() !== 0
-    })});
+    modal.render({content: basketView.render()});
+    modal.open()
 });
 
-events.on('modal:closed', () => {
+events.on('success:buttonClick', () => {
     modal.close();
 });
 
@@ -94,10 +99,15 @@ events.on('card:changed', () => {
 
         modal.render({
             content: cardPreview.render({
-                ...item,
+                description: item.description,
+                category: item.category,
+                image: CDN_URL + item.image,
+                price: item.price,
+                title: item.title,
                 ...button
             })
-        })
+        });
+        modal.open()
     }
 })
 
@@ -105,11 +115,11 @@ events.on('product:changedStatus', () => {
     const item = productsModel.getCard();
     if (item) {
         if (basketModel.checkingAvailability(item.id)) {
-            events.emit('card:deleted', item);
-            cardPreview.render({ button: "В корзину" });
+            basketModel.deletItem(item.id);
+            modal.close()
         } else {
             basketModel.addItem(item);
-            cardPreview.render({ button: "Удалить из корзины" });
+            modal.close()
         }
     }
 })
@@ -122,7 +132,7 @@ events.on('basket:arrange', () => {
     modal.render({content: formOrder.render()});
 });
 
-events.on('formOrder:changed', (data: { field: 'payment' | 'address'; value: Payment }) => {
+events.on('formOrder:changed', (data: TOrderFormChange) => {
     if (data.field === 'payment') {
         user.setuser({payment: data.value});
     } else {
@@ -145,23 +155,25 @@ events.on('user:changed', () => {
     const contactsTouched = state.email !== '' || state.phone !== '';
     
     formOrder.render({
-        ...state,
-        valid: Object.keys(orderErrors).length === 0,
-        error: orderTouched ? Object.values(orderErrors).join('; ') : ''
+        address: state.address,
+        payment: state.payment,
+        valid: orderErrors.length === 0,
+        error: orderTouched ? orderErrors.join('; ') : ''
     })
 
     formContacts.render({
-        ...state,
-        valid: Object.keys(contactsErrors).length === 0,
-        error: contactsTouched ? Object.values(contactsErrors).join('; ') : ''
+        phone: state.phone,
+        email: state.email,
+        valid: contactsErrors.length === 0,
+        error: contactsTouched ? contactsErrors.join('; ') : ''
     })
 })
 
-events.on('formOrder:submitted', () => {
+events.on('order:submit', () => {
     modal.render({content: formContacts.render()});
 });
 
-events.on('formContacts:changed', (data: { field: 'phone' | 'email'; value: string }) => {
+events.on('formContacts:changed', (data: TContactsFormChange) => {
     if (data.field === 'phone') {
         user.setuser({phone: data.value});
     } else {
@@ -169,7 +181,7 @@ events.on('formContacts:changed', (data: { field: 'phone' | 'email'; value: stri
     }
 })
 
-events.on('form:arrange', () => {
+events.on('contacts:submit', () => {
     const order: Order = {
         items: basketModel.getItems().map((product) => {
             return product.id
@@ -177,7 +189,7 @@ events.on('form:arrange', () => {
         ...user.getuser(),
         total: basketModel.sumProducts(),
     }
-    receivingProducts.postApiOrder(order)
+    larekApi.postApiOrder(order)
     .then(data => {
         modal.render({content: success.render({
             total: data.total
@@ -188,8 +200,10 @@ events.on('form:arrange', () => {
     .catch(console.error);
 });
 
-receivingProducts.getApiProduct()
+larekApi.getApiProduct()
 .then(data => {
     productsModel.setItems(data.items);
 })
 .catch(console.error);
+
+basketView.render({valid: basketModel.quantity() !== 0})

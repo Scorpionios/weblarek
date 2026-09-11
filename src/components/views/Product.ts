@@ -2,7 +2,7 @@ import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { ProductData } from "../../types/index";
 
-export class Product<T extends ProductData> extends Component<T> {
+export abstract class Product<T extends ProductData> extends Component<T> {
     protected titleElement: HTMLElement;
     protected priceElement: HTMLElement;
 
@@ -17,8 +17,8 @@ export class Product<T extends ProductData> extends Component<T> {
         this.titleElement.textContent = value;
     }
 
-    protected set price(value: number) {
-        if (value == null) {
+    protected set price(value: number | null) {
+        if (value === null) {
             this.priceElement.textContent = `Бесценно`;
         } else {
             this.priceElement.textContent = `${value} синапсов`;

@@ -1,43 +1,28 @@
 import { ensureElement } from '../../utils/utils';
-import { Product } from "./Product";
-import { ProductData } from "../../types/index";
-import { colorCategory } from "../Function/ColorCategory";
+import { ProductMidtermData, IProduct } from "../../types/index";
 import { IEvents } from "../base/Events";
+import { ProductMidterm } from "./ProductMidterm";
 
-interface ProductPreviewData extends ProductData {
-    category: string;
-    image: string;
-    description: string;
+type ProductPreviewData = Pick<IProduct, 'description'> 
+& ProductMidtermData 
+& {
     button: string;
     valid: boolean;
 };
 
-export class ProductPreview extends Product<ProductPreviewData> {
-    protected categoryElement: HTMLElement;
-    protected imageElement: HTMLImageElement;
+export class ProductPreview extends ProductMidterm<ProductPreviewData> {
     protected descriptionElement: HTMLElement;
     protected buyButtonElement: HTMLButtonElement;
 
     constructor(protected events: IEvents, container: HTMLElement) {
         super(container);
 
-        this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container);
-        this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.container);
         this.descriptionElement = ensureElement<HTMLElement>('.card__text', this.container);
         this.buyButtonElement = ensureElement<HTMLButtonElement>('.card__row .card__button', this.container);
 
         this.buyButtonElement.addEventListener(`click`, () => {
-            this.events.emit(`product:changedStatus`, this);
+            this.events.emit(`product:changedStatus`);
         });
-    }
-
-    protected set category(value: string) {
-        this.categoryElement.textContent = value;
-        colorCategory(this.categoryElement);
-    }
-
-    protected set image(value: string) {
-        this.imageElement.src = "/src/images" + value;
     }
 
     protected set description(value: string) {
